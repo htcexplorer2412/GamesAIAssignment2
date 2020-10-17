@@ -14,15 +14,16 @@ namespace Completed
     //Player inherits from MovingObject, our base class for objects that can move, Enemy also inherits from this.
     public class PlayerAgent : Agent
     {
-        public ObservationMode mode = ObservationMode.PLAYER_TO_SHEEP_TO_EXIT;
-
-        private Player player;
-        private int lastAction = 0;
-        private const int totalObservers = 44;
+        public ObservationMode observationMode = ObservationMode.PLAYER_TO_SHEEP_TO_EXIT;
 
         public float movePenalty = -0.01f;
         public float sheepDistancePenalty = -1.0f;
         public float finishReward = 10.0f;
+        public bool transformWorldToExit = true;
+
+        private Player player;
+        private int lastAction = 0;
+        private const int totalObservers = 44;
 
         void Start()
         {
@@ -32,6 +33,23 @@ namespace Completed
         public override void OnEpisodeBegin()
         {
             GameManager.instance.CreateNewLevel();
+        }
+
+        public Vector2 ExitSign()
+        {
+            if (transformWorldToExit)
+            {
+                Vector2 pos = GameManager.instance.exit.transform.position;
+                pos -= new Vector2(3.5f, 3.5f); // TODO: Make this scale to other board sizes
+                return new Vector2(
+                        Mathf.Sign(pos.x),
+                        Mathf.Sign(pos.y)
+                        );
+            }
+            else
+            {
+                return new Vector2(1.0f, 1.0f);
+            }
         }
 
         public void HandleRestartTest()
@@ -78,7 +96,7 @@ namespace Completed
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            switch(mode)
+            switch(observationMode)
             {
                 case ObservationMode.PLAYER_TO_SHEEP_TO_EXIT:
                     CollectObservationsPlayerSheepExit(sensor);
@@ -96,10 +114,12 @@ namespace Completed
             {
                 // Player to sheep vector
                 Vector2 player2Sheep = sheep.transform.position - player.transform.position;
+                player2Sheep *= ExitSign();
                 sensor.AddObservation(player2Sheep);
 
                 // Sheep to exit vector
                 Vector2 sheep2Exit = sheep.transform.position - GameManager.instance.exit.transform.position;
+                sheep2Exit *= ExitSign();
                 sensor.AddObservation(sheep2Exit);
 
                 count += 4;
@@ -117,6 +137,8 @@ namespace Completed
         private void CollectObservationsPlayerRelative (VectorSensor sensor)
         {
             Vector2 player2Exit = GameManager.instance.exit.transform.position;
+            Debug.Log("Player2Exit: " + player2Exit);
+            player2Exit *= ExitSign();
             sensor.AddObservation(player2Exit);
 
             int count = 2;
@@ -124,6 +146,7 @@ namespace Completed
             {
                 // Player to sheep vector
                 Vector2 player2Sheep = sheep.transform.position - player.transform.position;
+                player2Sheep *= ExitSign();
                 sensor.AddObservation(player2Sheep);
 
                 count += 2;
@@ -150,21 +173,23 @@ namespace Completed
 
             lastAction = (int)vectorAction[0] + 1; // To allow standing still as an action, remove the +1 and change "Branch 0 size" to 5.
 
+            Vector2 signf = ExitSign();
+            Vector2Int sign = new Vector2Int(Mathf.RoundToInt(signf.x), Mathf.RoundToInt(signf.y));
             switch (lastAction)
             {
                 case 0:
                     break;
                 case 1:
-                    player.AttemptMove<Wall>(-1, 0);
+                    player.AttemptMove<Wall>(-sign.x, 0);
                     break;
                 case 2:
-                    player.AttemptMove<Wall>(1, 0);
+                    player.AttemptMove<Wall>(sign.x, 0);
                     break;
                 case 3:
-                    player.AttemptMove<Wall>(0, -1);
+                    player.AttemptMove<Wall>(0, -sign.y);
                     break;
                 case 4:
-                    player.AttemptMove<Wall>(0, 1);
+                    player.AttemptMove<Wall>(0, sign.y);
                     break;
                 default:
                     break;
