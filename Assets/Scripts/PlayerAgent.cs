@@ -136,7 +136,7 @@ namespace Completed
 
         private void CollectObservationsPlayerRelative (VectorSensor sensor)
         {
-            Vector2 player2Exit = GameManager.instance.exit.transform.position;
+            Vector2 player2Exit = GameManager.instance.exit.transform.position - player.transform.position;
             Debug.Log("Player2Exit: " + player2Exit);
             player2Exit *= ExitSign();
             sensor.AddObservation(player2Exit);
