@@ -2,6 +2,7 @@
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
+using System.Collections.Generic;
 
 namespace Completed
 {
@@ -20,6 +21,7 @@ namespace Completed
         public float sheepDistancePenalty = -1.0f;
         public float finishReward = 10.0f;
         public bool transformWorldToExit = true;
+        public bool sortSheep = true;
 
         private Player player;
         private int lastAction = 0;
@@ -107,10 +109,23 @@ namespace Completed
             }
         }
 
+        private List<Sheep> GetSheep()
+        {
+            Vector2 pos = player.transform.position;
+            List<Sheep> result = GameManager.instance.sheep;
+            if (sortSheep)
+            {
+                result.Sort((a, b) =>
+                        Vector2.Distance(a.transform.position, pos).CompareTo(
+                            Vector2.Distance(b.transform.position, pos)));
+            }
+            return result;
+        }
+
         private void CollectObservationsPlayerSheepExit (VectorSensor sensor)
         {
             int count = 0;
-            foreach (Sheep sheep in GameManager.instance.sheep)
+            foreach (Sheep sheep in GetSheep())
             {
                 // Player to sheep vector
                 Vector2 player2Sheep = sheep.transform.position - player.transform.position;
@@ -142,7 +157,7 @@ namespace Completed
             sensor.AddObservation(player2Exit);
 
             int count = 2;
-            foreach (Sheep sheep in GameManager.instance.sheep)
+            foreach (Sheep sheep in GetSheep())
             {
                 // Player to sheep vector
                 Vector2 player2Sheep = sheep.transform.position - player.transform.position;
