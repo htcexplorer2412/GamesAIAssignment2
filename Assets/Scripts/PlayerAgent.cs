@@ -20,8 +20,9 @@ namespace Completed
         private int lastAction = 0;
         private const int totalObservers = 44;
 
-        private float movePenalty = -0.01f;
-        private float sheepDistancePenalty = -1.0f;
+        public float movePenalty = -0.01f;
+        public float sheepDistancePenalty = -1.0f;
+        public float finishReward = 10.0f;
 
         void Start()
         {
@@ -57,8 +58,7 @@ namespace Completed
         {
             if (restart)
                 return;
-            float reward = 5;
-            AddReward(reward);
+            AddReward(finishReward);
         }
 
         public void HandleLevelRestart(bool gameOver)
