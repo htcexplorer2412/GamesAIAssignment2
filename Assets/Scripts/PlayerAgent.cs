@@ -70,32 +70,22 @@ namespace Completed
 
         public override void CollectObservations(VectorSensor sensor)
         {
-            // Player position vector
-            sensor.AddObservation(player.transform.position);
+            int count = 0;
+            foreach (Sheep sheep in GameManager.instance.sheep)
+            {
+                // Player to sheep vector
+                Vector2 player2Sheep = sheep.transform.position - player.transform.position;
+                sensor.AddObservation(player2Sheep);
 
-            // Exit position vector
-            sensor.AddObservation(GameManager.instance.exit.transform.position);
-                
-                // Player to exit vector
-                sensor.AddObservation(GameManager.instance.exit.transform.position - player.transform.position);
-                
-                int count = 9;
-                foreach (Sheep sheep in GameManager.instance.sheep)
-                {
-                    // Sheep position vector
-                    sensor.AddObservation(sheep.transform.position);
+                // Sheep to exit vector
+                Vector2 sheep2Exit = sheep.transform.position - GameManager.instance.exit.transform.position;
+                sensor.AddObservation(sheep2Exit);
 
-                    // Player to sheep vector
-                    sensor.AddObservation(sheep.transform.position - player.transform.position);
-
-                    // Sheep to exit vector
-                    sensor.AddObservation(sheep.distToExit);
-
-                    count += 7;
-                }
+                count += 4;
+            }
 
             // Add difference between player and sheep
-            for (int i = 0; i < totalObservers - count; i++)
+            for (int i = 0; i < totalObservers - count; i++)
             {
                 sensor.AddObservation(0.0f);
             }
