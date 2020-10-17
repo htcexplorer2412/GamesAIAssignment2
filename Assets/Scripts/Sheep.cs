@@ -13,9 +13,10 @@ namespace Completed
 		
 		
 		private Animator animator;							//Variable of type Animator to store a reference to the sheep's Animator component.
-		private Transform target;							//Transform to attempt to move toward each turn.
-		private bool skipMove;								//Boolean to determine whether or not sheep should skip a turn or move this turn.
-		
+		private GameObject target;                          //Transform to attempt to move toward each turn.
+		private Player player;
+		private bool skipMove;                              //Boolean to determine whether or not sheep should skip a turn or move this turn.
+		public float distToExit;
 		
 		//Start overrides the virtual Start function of the base class.
 		protected override void Start ()
@@ -28,8 +29,9 @@ namespace Completed
 			animator = GetComponent<Animator> ();
 			
 			//Find the Player GameObject using it's tag and store a reference to its transform component.
-			target = GameObject.FindGameObjectWithTag ("Player").transform;
-			
+			target = GameObject.FindGameObjectWithTag ("Player");
+
+			player = target.GetComponent<Player>();
 			//Call the start function of our base class MovingObject.
 			base.Start ();
 		}
@@ -46,20 +48,31 @@ namespace Completed
 				return;
 				
 			}
-			
+
+			float oldPosDis = Vector3.Distance(GameManager.instance.exit.transform.position, transform.position);
+
 			//Call the AttemptMove function from MovingObject.
 			base.AttemptMove <T> (xDir, yDir);
 			
 			//Now that Sheep has moved, set skipMove to true to skip next move.
 			skipMove = true;
+
+			distToExit = Vector3.Distance(GameManager.instance.exit.transform.position, transform.position);
+			if (oldPosDis > distToExit)
+            {
+				player.MovedASheep(0.1f);
+            }
 		}
 		
 		
 		//MoveSheep is called by the GameManger each turn to tell each Sheep to try to away from the player.
 		public void MoveSheep ()
 		{
+			if (Vector3.Distance(transform.position, target.transform.position) > 3)
+				return;
+
             Vector2 pos = new Vector2(transform.position.x, transform.position.y);
-            Vector2 tpos = new Vector2(target.position.x, target.position.y);
+            Vector2 tpos = new Vector2(target.transform.position.x, target.transform.position.y);
 
             // Sort the possible directions by which one will get the sheep the furthest from the target (player)
             Vector2Int[] directions = {Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right};

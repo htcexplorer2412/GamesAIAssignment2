@@ -19,7 +19,7 @@ namespace Completed
 		public float turnDelay = 0.1f;							//Delay between each Player turn.
 		public static GameManager instance = null;              //Static instance of GameManager which allows it to be accessed by any other script.
 
-        public const int playerMovesPerSheepMove = 2;
+        public const int playerMovesPerSheepMove = 0;
         public int playerMovesSinceSheepMove = 0;
 		
 		private Text levelText;									//Text to display current level number.
@@ -229,7 +229,7 @@ namespace Completed
 			if (score >= endScore)
             {
 				
-				player.CheckIfGameOver();
+				player.CheckIfGameOver(true);
 			}
 
 			

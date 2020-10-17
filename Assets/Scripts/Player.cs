@@ -25,6 +25,11 @@ namespace Completed
 #endif
 
 
+		public void MovedASheep(float reward)
+        {
+			agent.HandleMoveSheep(reward);
+        }
+
         //Start overrides the Start function of MovingObject
         protected override void Start ()
 		{
@@ -45,11 +50,13 @@ namespace Completed
 		//AttemptMove takes a generic parameter T which for Player will be of the type Wall, it also takes integers for x and y direction to move in.
 		public override void AttemptMove <T> (int xDir, int yDir)
 		{
-			if (moves > 300)
+			
+			if (moves > 1000)
             {
 				agent.HandleRestartTest();
-				CheckIfGameOver();
+				CheckIfGameOver(false);
             }
+			
 			//Call the AttemptMove method of the base class, passing in the component T (in this case Wall) and x and y direction to move.
 			base.AttemptMove <T> (xDir, yDir);
 			
@@ -106,14 +113,14 @@ namespace Completed
 		
 		
         //CheckIfGameOver checks if the player is out of food points and if so, ends the game.
-        public void CheckIfGameOver()
+        public void CheckIfGameOver(bool restart)
         {
             if (levelFinished || gameOver)
             {
                 return;
             }
 
-			agent.HandleFinishlevel();
+			agent.HandleFinishlevel(restart);
 
 			//Invoke the Restart function to start the next level with a delay of restartLevelDelay (default 1 second).
 			Invoke("Restart", GameManager.instance.restartLevelDelay);
