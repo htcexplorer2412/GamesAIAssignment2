@@ -231,8 +231,6 @@ namespace Completed
 				
 				player.CheckIfGameOver(true);
 			}
-
-			
         }
 	}
 }

@@ -24,12 +24,6 @@ namespace Completed
         private Vector2 touchOrigin = -Vector2.one;	//Used to store location of screen touch origin for mobile controls.
 #endif
 
-
-		public void MovedASheep(float reward)
-        {
-			agent.HandleMoveSheep(reward);
-        }
-
         //Start overrides the Start function of MovingObject
         protected override void Start ()
 		{
@@ -129,10 +123,6 @@ namespace Completed
 			enabled = false;
 
 			levelFinished = true;
-
-
-
-
 		}
 
 		public void Score()

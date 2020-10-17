@@ -58,10 +58,6 @@ namespace Completed
 			skipMove = true;
 
 			distToExit = Vector3.Distance(GameManager.instance.exit.transform.position, transform.position);
-			if (oldPosDis > distToExit)
-            {
-				player.MovedASheep(0.1f);
-            }
 		}
 		
 		
