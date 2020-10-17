@@ -5,9 +5,17 @@ using Unity.MLAgents.Policies;
 
 namespace Completed
 {
+    public enum ObservationMode
+    {
+        PLAYER_TO_SHEEP_TO_EXIT,
+        PLAYER_RELATIVE
+    }
+
     //Player inherits from MovingObject, our base class for objects that can move, Enemy also inherits from this.
     public class PlayerAgent : Agent
     {
+        public ObservationMode mode = ObservationMode.PLAYER_TO_SHEEP_TO_EXIT;
+
         private Player player;
         private int lastAction = 0;
         private const int totalObservers = 44;
@@ -70,6 +78,19 @@ namespace Completed
 
         public override void CollectObservations(VectorSensor sensor)
         {
+            switch(mode)
+            {
+                case ObservationMode.PLAYER_TO_SHEEP_TO_EXIT:
+                    CollectObservationsPlayerSheepExit(sensor);
+                    break;
+                case ObservationMode.PLAYER_RELATIVE:
+                    CollectObservationsPlayerRelative(sensor);
+                    break;
+            }
+        }
+
+        private void CollectObservationsPlayerSheepExit (VectorSensor sensor)
+        {
             int count = 0;
             foreach (Sheep sheep in GameManager.instance.sheep)
             {
@@ -82,6 +103,30 @@ namespace Completed
                 sensor.AddObservation(sheep2Exit);
 
                 count += 4;
+            }
+
+            // Add difference between player and sheep
+            for (int i = 0; i < totalObservers - count; i++)
+            {
+                sensor.AddObservation(0.0f);
+            }
+
+            base.CollectObservations(sensor);
+        }
+
+        private void CollectObservationsPlayerRelative (VectorSensor sensor)
+        {
+            Vector2 player2Exit = GameManager.instance.exit.transform.position;
+            sensor.AddObservation(player2Exit);
+
+            int count = 2;
+            foreach (Sheep sheep in GameManager.instance.sheep)
+            {
+                // Player to sheep vector
+                Vector2 player2Sheep = sheep.transform.position - player.transform.position;
+                sensor.AddObservation(player2Sheep);
+
+                count += 2;
             }
 
             // Add difference between player and sheep
