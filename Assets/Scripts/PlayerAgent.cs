@@ -72,6 +72,25 @@ namespace Completed
         {
             // TODO: Change the reward below as appropriate. If you want to add a cost per move, you could change the reward to -1.0f (for example).
             AddReward(movePenalty);
+
+            foreach (Sheep sheep in GameManager.instance.sheep)
+            {
+               float sheepPlayerDist = Vector2.Distance(sheep.transform.position,player.transform.position);
+               if(sheepPlayerDist < 2.5f)
+               {
+                   AddReward(0.8f);
+                   if(Vector2.Distance(GameManager.instance.exit.transform.position,sheep.transform.position) < 1.0f)
+                   {
+                       AddReward(1.0f);
+                   }
+               }
+            }
+            
+        }
+
+         public void HandleAttemptMoveWall()
+        {
+            AddReward(-1.0f);
         }
 
         public void HandleFinishlevel(bool restart)

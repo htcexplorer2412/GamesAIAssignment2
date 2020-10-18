@@ -50,7 +50,7 @@ namespace Completed
 				agent.HandleRestartTest();
 				CheckIfGameOver(false);
             }
-			
+			agent.HandleAttemptMove();
 			//Call the AttemptMove method of the base class, passing in the component T (in this case Wall) and x and y direction to move.
 			base.AttemptMove <T> (xDir, yDir);
 			
@@ -75,6 +75,7 @@ namespace Completed
 		{
 			//Set hitWall to equal the component passed in as a parameter.
 			Wall hitWall = component as Wall;
+			agent.HandleAttemptMoveWall();
 			
 			//Call the DamageWall function of the Wall we are hitting.
 			hitWall.DamageWall (wallDamage);
