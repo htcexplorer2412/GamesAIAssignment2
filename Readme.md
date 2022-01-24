@@ -1,3 +1,7 @@
+Group Assignment For Game and AI for RMIT University
+Student Number - S3737370
+
+How to Run
 To train new model follow this instruction
 
 Config file located in config folder. Where Yaml file is located
@@ -6,3 +10,5 @@ Run this command in your UNity ml-agents enviroment
 
 To run already trained model just attached .nn file to Agent. 
 .nn file is located here playerBehaviour\playerBehaviour.nn
+
+
